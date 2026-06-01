@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#111827">
+<title>Clássics 101.9</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:Arial, sans-serif;
+}
+
+body{
+  background:#000;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  min-height:100vh;
+  padding:20px;
+}
+
+.container{
+  position:relative;
+  width:340px;
+  text-align:center;
+  color:white;
+  padding:30px;
+  border-radius:22px;
+  overflow:hidden;
+  box-shadow:0 10px 30px rgba(0,0,0,0.45);
+
+  /* BACKGROUND AJUSTADO AL CONTAINER */
+  background:url('https://i.ibb.co/Q3JJWVYd/Micr-fono-para-PC.jpg') no-repeat center center;
+  background-size:cover;
+}
+
+/* CAPA OSCURA */
+.container::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:rgba(15,23,42,0.72);
+  z-index:0;
+}
+
+/* TODO ENCIMA DEL FONDO */
+.container *{
+  position:relative;
+  z-index:1;
+}
+
+.logo{
+  width:220px;
+  height:220px;
+  object-fit:contain;
+  margin-bottom:8px;
+}
+
+h1{
+  font-size:26px;
+  margin-bottom:10px;
+}
+
+p{
+  color:#e2e8f0;
+  margin-bottom:20px;
+}
+
+.main-btn{
+  width:75px;
+  height:75px;
+  border:none;
+  border-radius:50%;
+  background:#22c55e;
+  color:white;
+  font-size:30px;
+  cursor:pointer;
+  margin-bottom:20px;
+  transition:0.3s;
+}
+
+.main-btn:hover{
+  transform:scale(1.08);
+}
+
+.main-btn.pause-mode{
+  background:#ef4444;
+}
+
+.volume{
+  width:100%;
+  accent-color:#22c55e;
+  margin-bottom:22px;
+}
+
+.social{
+  display:flex;
+  justify-content:center;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-bottom:20px;
+}
+
+/* BOTONES DEL MISMO TAMAÑO */
+.social a{
+  width:75px;
+  height:75px;
+  border-radius:50%;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  color:white;
+  text-decoration:none;
+  font-size:28px;
+  transition:0.3s;
+}
+
+.social a:hover{
+  transform:scale(1.15);
+}
+
+.whatsapp{
+  background:#25D366;
+}
+
+.facebook{
+  background:#1877F2;
+}
+
+.instagram{
+  background:linear-gradient(45deg,#f58529,#dd2a7b,#8134af,#515bd4);
+}
+
+.paypal{
+  background:#003087;
+}
+
+/* BOTÓN WEB */
+.web{
+  background:#0ea5e9;
+}
+
+footer{
+  margin-top:14px;
+  font-size:12px;
+  color:#cbd5e1;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<img src="https://i.ibb.co/KpcxLSn5/225x225.jpg" class="logo">
+
+<h1>Clássics 101.9</h1>
+<center><p>Transmitiendo musica de los 80 y 90 
+La época dorada "Escuchanos".  </p></center>
+
+<button id="toggleBtn" class="main-btn" onclick="toggleRadio()">
+<i class="fas fa-play"></i>
+</button>
+
+<input
+type="range"
+min="0"
+max="1"
+step="0.01"
+value="1"
+class="volume"
+oninput="changeVolume(this.value)"
+>
+
+<div class="social">
+
+<a href="https://wa.me/" target="_blank" class="whatsapp">
+<i class="fab fa-whatsapp"></i>
+</a>
+
+<!-- LINK CORREGIDO -->
+<a href="https://biolink.website/classics1019" target="_blank" class="web">
+<i class="fas fa-globe"></i>
+</a>
+
+</div>
+
+<footer>Clássics 101.9</footer>
+
+</div>
+
+<!-- AUDIO MÁS RÁPIDO -->
+<audio id="radio" preload="auto" playsinline>
+<source src="https://radios.yanapak.org/classics" type="audio/mpeg">
+</audio>
+
+<script>
+const radio = document.getElementById("radio");
+const btn = document.getElementById("toggleBtn");
+let playing = false;
+
+function toggleRadio(){
+
+if(!playing){
+
+radio.play().then(()=>{
+playing=true;
+btn.innerHTML='<i class="fas fa-pause"></i>';
+btn.classList.add("pause-mode");
+activarMediaSession();
+guardarEstado(true);
+});
+
+}else{
+
+radio.pause();
+playing=false;
+btn.innerHTML='<i class="fas fa-play"></i>';
+btn.classList.remove("pause-mode");
+guardarEstado(false);
+
+}
+}
+
+function changeVolume(v){
+radio.volume=v;
+}
+
+function activarMediaSession(){
+
+if("mediaSession" in navigator){
+
+navigator.mediaSession.metadata = new MediaMetadata({
+title:"Mi Emisora",
+artist:"Radio Online",
+album:"En Vivo",
+artwork:[{
+src:"https://i.ibb.co/bfpGY16/Dise-o-sin-t-tulo.png",
+sizes:"512x512",
+type:"image/png"
+}]
+});
+
+navigator.mediaSession.setActionHandler("play", ()=>radio.play());
+navigator.mediaSession.setActionHandler("pause", ()=>radio.pause());
+
+}
+
+}
+
+function guardarEstado(v){
+localStorage.setItem("radio_playing", v);
+}
+
+window.addEventListener("load", ()=>{
+if(localStorage.getItem("radio_playing")==="true"){
+toggleRadio();
+}
+});
+
+/* SERVICE WORKER */
+if("serviceWorker" in navigator){
+
+const swCode=`
+self.addEventListener('install',e=>self.skipWaiting());
+self.addEventListener('fetch',e=>{});
+self.addEventListener('activate',e=>self.clients.claim());
+`;
+
+navigator.serviceWorker.register(
+URL.createObjectURL(new Blob([swCode],{type:'text/javascript'}))
+);
+
+}
+</script>
+
+</body>
+</html>
